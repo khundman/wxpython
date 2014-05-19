@@ -24,7 +24,6 @@ class BNGUI(wx.Frame):
         fileMenu = wx.Menu()
         fileMenu.Append(wx.ID_NEW, '&New')
         menuOpen = fileMenu.Append(wx.ID_OPEN, '&Open')
-<<<<<<< HEAD
         fileMenu.Append(wx.ID_SAVE, '&Save')
         fileMenu.AppendSeparator()
         
@@ -33,7 +32,6 @@ class BNGUI(wx.Frame):
         
         self.Bind(wx.EVT_MENU, self.OnQuit, qmi)
         self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
-=======
         menuSave = fileMenu.Append(wx.ID_SAVE, '&Save')
         fileMenu.AppendSeparator()
         
@@ -42,7 +40,6 @@ class BNGUI(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnQuit, qmi)
         self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
         self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
->>>>>>> 6dce7e03e8ca7e4c25107363ec9206c0a19235e9
 
         menubar.Append(fileMenu, '&File')
         
@@ -90,12 +87,6 @@ class BNGUI(wx.Frame):
             f= dirname + '/' + filename
             BN.load(f) #Load and parse network from properly-formatted JSON file
         dlg.Destroy()
-<<<<<<< HEAD
-
-    def OnSave(self,e):
-        '''Save JSON file'''
-        pass
-=======
         
     def OnSave(self,event):
         # Save away the edited text
@@ -110,7 +101,6 @@ class BNGUI(wx.Frame):
             BN.save(f)
         # Get rid of the dialog to keep things tidy
         dlg.Destroy()
->>>>>>> 6dce7e03e8ca7e4c25107363ec9206c0a19235e9
 
 #Panel within frame - special type of panel for painting objects on
 class DrawPanel(wx.Panel):
@@ -259,16 +249,8 @@ def getInputs(parent = None):
 def main():
     bn = wx.App()
     g = BNGUI(None)
-<<<<<<< HEAD
     DrawPanel(g)
     bn.MainLoop()    
-    
+       
 if __name__ == '__main__':
      main()
-=======
-    #DrawPanel(g)
-    bn.MainLoop()    
-    
-if __name__ == '__main__':
-     main()
->>>>>>> 6dce7e03e8ca7e4c25107363ec9206c0a19235e9
