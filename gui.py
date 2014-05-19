@@ -1,4 +1,8 @@
 #Testing a commit
+#Commit code to github: git push origin master (after first one, can just typw git push)
+
+#To Do's
+#Multiple circles - redraw based on BN.parent.length
 
 import wx
 import os
@@ -11,6 +15,7 @@ class BNGUI(wx.Frame):
     def __init__(self, *args, **kwargs):
         super(BNGUI,self).__init__(*args,**kwargs)
         self.InitUI()
+        self.SetBackgroundColour("white")
 
     def InitUI(self):
         menubar = wx.MenuBar()
@@ -42,7 +47,7 @@ class BNGUI(wx.Frame):
         menubar.Append(viewMenu, '&View')
         self.SetMenuBar(menubar)
 
-        self.Panel = DrawPanel(self) #call DrawPanel class
+        #self.Panel = DrawPanel() #call DrawPanel class
         self.Fit()
         
         self.toolbar = self.CreateToolBar()
@@ -51,7 +56,7 @@ class BNGUI(wx.Frame):
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetStatusText('Ready')
 
-        self.SetSize((350, 250))
+        self.SetSize((700, 600))
         self.SetTitle('Bayesian Network')
         self.Centre()
         self.Show(True)
@@ -81,9 +86,9 @@ class BNGUI(wx.Frame):
 
 #Panel within frame - special type of panel for painting objects on
 class DrawPanel(wx.Panel):
-    P = [100] 
-    Qc = [100] 
-    Qb = [100]  #where to draw circle on canvas
+    P = [200] 
+    Qc = [200] 
+    Qb = [200]  #where to draw circle on canvas
     r = 80 #circle radius
     dim = len(P) 
     j = 0 #not sure what these are for
@@ -109,11 +114,13 @@ class DrawPanel(wx.Panel):
         self.SetSizerAndFit(Sizer)
         self.InitBuffer() 
         self.Buffer = None 
+        #self.SetBackgroundColour("white")
+        self.SetSize((700, 600))
 
     def InitBuffer(self):
         '''Setup canvas for circle drawing''' 
         size=self.GetClientSize() 
-        self.Buffer = wx.Bitmap(size.width,size.height) 
+        self.Buffer = wx.EmptyBitmap(size.width, size.height) 
         self.dc = wx.MemoryDC() 
         self.dc.SelectObject(self.Buffer) 
         
@@ -121,12 +128,13 @@ class DrawPanel(wx.Panel):
         '''Called when AddNode button is clicked - draw circle and line''' 
         self.dc = wx.PaintDC(self)       
         self.drawCircle() 
+        self.Refresh() 
+        self.InitBuffer 
         self.drawLine() 
 
     def drawCircle(self): 
         self.dc.SetPen(wx.Pen("black", style=wx.SOLID)) 
         #self.dc.SetBrush(wx.Brush("red", wx.TRANSPARENT)) 
-        self.SetBackgroundColour("white")
         for i in range(self.dim):
             self.dc.DrawCircle(self.P[i], self.Qc[i], self.r)  
 
@@ -185,7 +193,7 @@ class DrawPanel(wx.Panel):
 
     def AddNode(self, e):
         '''Create a node from scratch - Only draws circle right now (won't draw multiple circles if you click button multiple times)'''
-        getInputs() #get info needed - eventually display within circles (maybe)
+        getInputs() #get info needed - eventually display within circles (maybe), or try and allow for right clicking in circle and open 'properties'
         self.Bind(wx.EVT_PAINT, self.OnPaint) #draw circles 
         self.Bind(wx.EVT_LEFT_DOWN, self.MouseDown) #allow for moving of cirlces/lines
         self.Bind(wx.EVT_LEFT_UP, self.MouseUp) 
@@ -193,7 +201,7 @@ class DrawPanel(wx.Panel):
     
     def OnInfBtn(self, event=None):
         """Show results (eventually)."""
-        #this will call BN.doInference eventually and display results
+        #this will call BN.doInference eventually and display results - need to think about display
         dlg = wx.MessageDialog(self,
                                message='Here is your answer',
                                caption='Inference',
@@ -222,7 +230,8 @@ def getInputs(parent = None):
  
 def main():
     bn = wx.App()
-    BNGUI(None)
+    g = BNGUI(None)
+    DrawPanel(g)
     bn.MainLoop()    
     
 if __name__ == '__main__':
