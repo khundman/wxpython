@@ -115,7 +115,6 @@ class DrawPanel(wx.Panel):
 
     def __init__(self, parent): 
         wx.Panel.__init__(self, parent) 
-
         # 'Add node' button (calls AddNode function)
         AddNodeBtn = wx.Button(self, label="Add Node")
         AddNodeBtn.Bind(wx.EVT_BUTTON, self.AddNode)
@@ -124,10 +123,16 @@ class DrawPanel(wx.Panel):
         InfBtn = wx.Button(self, label="Do Inference")
         InfBtn.Bind(wx.EVT_BUTTON, self.OnInfBtn)
 
+        # View Properties button
+        ViewPropBtn = wx.Button(self, label="View Properties")
+        ViewPropBtn.Bind(wx.EVT_BUTTON, self.ChooseNodeToView)
+       
+
         #Align buttons top left
         Sizer = wx.BoxSizer(wx.HORIZONTAL)
         Sizer.Add(AddNodeBtn, 0, wx.ALIGN_LEFT|wx.ALL, 5)
         Sizer.Add(InfBtn, 0, wx.ALIGN_TOP|wx.ALL, 5)
+        Sizer.Add(ViewPropBtn, 0, wx.ALIGN_TOP|wx.ALL, 5)
 
         self.SetSizerAndFit(Sizer)
         self.InitBuffer() 
@@ -228,6 +233,48 @@ class DrawPanel(wx.Panel):
         dlg.ShowModal()
         dlg.Destroy()
 
+    def ChooseNodeToView(self, e):
+        #Choices
+        sampleList = BN.nodesSave
+        wx.StaticText(self, -1, "Please select node to view:", (228, 230))
+        self.ch = wx.Choice(self, -1, (250, 250), choices = sampleList)
+        self.Bind(wx.EVT_CHOICE, self.ViewNode, self.ch)
+
+    def ViewNode(self, event):
+
+        self.Refresh
+        self.InitBuffer 
+
+        # Button to erase properties and redraw everything else
+        ExitPropBtn = wx.Button(self, label="Return to Home")
+        ExitPropBtn.Bind(wx.EVT_BUTTON, self.Refresh)
+
+        Sizer = wx.BoxSizer(wx.VERTICAL)
+        Sizer.Add(ExitPropBtn, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
+        self.SetSizerAndFit(Sizer)
+
+        node = event.GetString()
+        #List Control
+        id=wx.NewId()
+        prop=wx.ListCtrl(self,id, size=(700,600), style=wx.LC_REPORT|wx.BORDER_SUNKEN)
+
+        prop.Show(True)
+
+        bnIndex = BN.nodesSave.index(node)
+        prop.InsertColumn(0,'Parent',width = 250)
+        prop.InsertColumn(1,'States', width = 250)
+        prop.InsertColumn(2,'CPT', width = 250)
+
+        # 0 will insert at the start of the list
+        pos = prop.InsertStringItem(0,str(BN.parentsSave[bnIndex]))
+        # add values in the other columns on the same row
+        prop.SetStringItem(pos,1,str(BN.statesSave[bnIndex]))
+        prop.SetStringItem(pos,2,str(BN.cptsSave[bnIndex]))
+
+    def Refresh(self, event):
+        self.Destroy()
+        main()
+
 def getInputs(parent = None):
     '''Get inputs needed to create node and add to inputs to global lists in BN'''
     #Input name
@@ -244,7 +291,6 @@ def getInputs(parent = None):
 
     #Input States - same as parents (ask for number first)
     #Input cpts (ideally grab parent states and create table to allow user to enter)
-
  
 def main():
     bn = wx.App()
