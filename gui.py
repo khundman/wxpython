@@ -10,6 +10,7 @@ import BayesianNetwork as BN
 import functools
 import datetime
 
+evidenceHolder = [] 
 
 #Frame - can't figure out how to change initial size
 class BNGUI(wx.Frame):
@@ -141,16 +142,20 @@ class panel_one (wx.Panel):
 
     def ChooseNodeToView(self, e):
         #Choices
+        label3 = "Please select node to view:"
+        self.text.SetLabel(label3)
         size=self.GetClientSize() 
         sampleList = BN.nodesSave
-        text0 = wx.StaticText(self, -1, "Please select node to view:", style = wx.ALIGN_CENTER)
-        text0.CenterOnParent()
-        self.ch = wx.Choice(self, -1, (120, 120), choices = sampleList)
-        self.Bind(wx.EVT_CHOICE, self.ViewNode, self.ch)
+        #text0 = wx.StaticText(self, -1, "Please select node to view:", style = wx.ALIGN_CENTER)
+        self.text.CenterOnParent()
+        self.ch2 = wx.Choice(self, -1, (380, 120), choices = sampleList)
+        self.Bind(wx.EVT_CHOICE, self.ViewNode, self.ch2)
 
 
     def ViewNode(self, event):
         #self.Refresh
+        label3 = "hi"
+        self.text.SetLabel(label3)
         # Button to erase properties and redraw everything else
         ExitPropBtn = wx.Button(self, label="Return to Home")
         ExitPropBtn.Bind(wx.EVT_BUTTON, self.Refresh)
@@ -179,34 +184,38 @@ class panel_one (wx.Panel):
         prop.SetStringItem(pos,2,str(BN.cptsSave[bnIndex]))
         #text0.Destroy()
 
-    def Refresh(self, event):
+    def Refresh(self):
         self.Destroy()
-        main()
 
     def ChooseEvidenceNode(self, event):
         #Choices
         #self.Refresh
         nodeList = BN.nodesSave
-        text = wx.StaticText(self, -1, "Please select node to set evidence on:", (238, 100))
-        self.ch = wx.Choice(self, -1, (250, 120), choices = nodeList)
+        self.text = wx.StaticText(self, -1, "Please select node to set evidence on:", (450, 100))
+        self.text.CenterOnParent()
+        self.ch = wx.Choice(self, -1, (380, 120), choices = nodeList)
+        #self.ch.CenterOnParent()
         self.Bind(wx.EVT_CHOICE, self.ChooseEvidenceState, self.ch)
-        #text.Destroy()
 
     def ChooseEvidenceState(self, event):
-        #self.Refresh
+        self.ch.Clear()
         evidenceNode = event.GetString()
         evidenceHolder.append(evidenceNode)
         stateList = BN.statesSave[BN.nodesSave.index(evidenceNode)]
-        text2 = wx.StaticText(self, -1, "Please select state for evidence:", (238, 200))
-        self.ch2 = wx.Choice(self, -1, (250, 220), choices = stateList)
-        self.Bind(wx.EVT_CHOICE, self.SetEvidence, self.ch2)
-        #text.Destroy()    
+        label = "Please select state for evidence:"
+        self.text.SetLabel(label)
+        self.ch.Append(stateList) 
+        self.Bind(wx.EVT_CHOICE, self.SetEvidence, self.ch)
 
     def SetEvidence(self, event):
         state = event.GetString()
         statePosition = BN.statesSave[BN.nodesSave.index(evidenceHolder[0])].index(state)
         BN.evidenceList.append({evidenceHolder[0]:statePosition})
         del evidenceHolder[:]
+        self.ch.Hide()
+        label2 = "Evidence set!"
+        self.text.SetLabel(label2)
+        self.text.CenterOnParent
 
     def __del__( self ):
         pass
