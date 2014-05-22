@@ -8,6 +8,7 @@ parentsSave = []
 statesSave = []
 cptsSave = []
 cpts = []
+evidenceList = []
 
 def load (filepath):
     '''Load in existing notwork'''
@@ -109,6 +110,11 @@ def getUserInput():
         evidenceList.append(evidence)
         nodeData=[]
 
+#Get node via dropdown
+#Get position of state via dropdown (index state selected in specific position of node in global list)
+#Jam together in list of key value pairs
+#EvidenceList = NodeName:position of state
+
     return evidenceList   
     
 def setEvidenceList(evidenceList):
@@ -143,28 +149,28 @@ def save(filepath):
                 "States": statesSave[z],
                 "cpt": cptsSave[z]})
         json.dump(network, outfile)
-    del nodesSave[:]
-    del parentsSave[:]
-    del statesSave[:]
-    del cptsSave[:]
-    del cpts[:]
+    # del nodesSave[:]
+    # del parentsSave[:]
+    # del statesSave[:]
+    # del cptsSave[:]
+    # del cpts[:]
 
 
-#Test Case        
-load("/users/kylehundman/desktop/input.json") #loads in z,x,a
-# #must create nodes in this order (parent before its child). Also can't add nodes as parents of loaded nodes. Must work top to bottom.
-createNode() #create c [ 0.1,  0.2,  0.3,  0.4]
-createNode() #create b [[[ 0.2 ,  0.4 ,  0.4 ],[ 0.33,  0.33,  0.34]],[[ 0.1 ,  0.5 ,  0.4 ],[ 0.3 ,  0.1 ,  0.6 ]],[[ 0.01,  0.01,  0.98],[ 0.2 ,  0.7 ,  0.1 ]],[[ 0.2 ,  0.1 ,  0.7 ],[ 0.9 ,  0.05,  0.05]]]
-createNode() #create e [[.1, .9],[.3,.7],[.6,.4]]
-createNode() #create f [[.2, .8],[.55,.45]]
-deleteNode('b') #won't work because it is a parent
-#deleteNode('f') #will work because nothing is dependent on it
-evidences = getUserInput()
-doInference(cpts + setEvidenceList(evidences))
-save("/users/kylehundman/desktop/output.json")
-load("/users/kylehundman/desktop/output.json") #load back in saved node (after creation of full network)
-evidences = getUserInput()  
-doInference(cpts + setEvidenceList(evidences))
+# #Test Case        
+# load("/users/kylehundman/desktop/input.json") #loads in z,x,a
+# # #must create nodes in this order (parent before its child). Also can't add nodes as parents of loaded nodes. Must work top to bottom.
+# createNode() #create c [ 0.1,  0.2,  0.3,  0.4]
+# createNode() #create b [[[ 0.2 ,  0.4 ,  0.4 ],[ 0.33,  0.33,  0.34]],[[ 0.1 ,  0.5 ,  0.4 ],[ 0.3 ,  0.1 ,  0.6 ]],[[ 0.01,  0.01,  0.98],[ 0.2 ,  0.7 ,  0.1 ]],[[ 0.2 ,  0.1 ,  0.7 ],[ 0.9 ,  0.05,  0.05]]]
+# createNode() #create e [[.1, .9],[.3,.7],[.6,.4]]
+# createNode() #create f [[.2, .8],[.55,.45]]
+# deleteNode('b') #won't work because it is a parent
+# #deleteNode('f') #will work because nothing is dependent on it
+# evidences = getUserInput()
+# doInference(cpts + setEvidenceList(evidences))
+# save("/users/kylehundman/desktop/output.json")
+# load("/users/kylehundman/desktop/output.json") #load back in saved node (after creation of full network)
+# evidences = getUserInput()  
+# doInference(cpts + setEvidenceList(evidences))
 
 
 
