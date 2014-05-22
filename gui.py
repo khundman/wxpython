@@ -10,6 +10,7 @@ import BayesianNetwork as BN
 import functools
 import datetime
 
+
 #Frame - can't figure out how to change initial size
 class BNGUI(wx.Frame):
     def __init__(self, *args, **kwargs):
@@ -64,7 +65,7 @@ class BNGUI(wx.Frame):
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetStatusText('Ready')
 
-        self.SetSize((700, 600))
+        self.SetSize((900, 700))
         self.SetTitle('Bayesian Network')
         self.Centre()
         self.Show(True)
@@ -102,43 +103,34 @@ class BNGUI(wx.Frame):
         # Get rid of the dialog to keep things tidy
         dlg.Destroy()
 
-#Panel within frame - special type of panel for painting objects on
-class DrawPanel(wx.Panel):
-    P = [200] 
-    Qc = [200] 
-    Qb = [200]  #where to draw circle on canvas
-    r = 80 #circle radius
-    dim = len(P) 
-    j = 0 #not sure what these are for
-    t = 0 
-    d = 0
+class panel_one (wx.Panel):
 
-    def __init__(self, parent): 
-        wx.Panel.__init__(self, parent) 
-        # 'Add node' button (calls AddNode function)
-        AddNodeBtn = wx.Button(self, label="Add Node")
-        AddNodeBtn.Bind(wx.EVT_BUTTON, self.AddNode)
+    def __init__( self, parent ):
+        wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, style = wx.TAB_TRAVERSAL )
 
-        # 'Do Inference' button (will eventually call DoInference Function from BN)
-        InfBtn = wx.Button(self, label="Do Inference")
-        InfBtn.Bind(wx.EVT_BUTTON, self.OnInfBtn)
+        #self.Layout()
+        #self.InitBuffer() 
+        #self.Buffer = None 
+        
+        self.SetSize((900, 200))
 
         # View Properties button
-        ViewPropBtn = wx.Button(self, label="View Properties")
+        ViewPropBtn = wx.Button(self, label="View Properties", pos = (100,0))
         ViewPropBtn.Bind(wx.EVT_BUTTON, self.ChooseNodeToView)
-       
 
-        #Align buttons top left
+        # Set Evidence button
+        EvidenceBtn = wx.Button(self, label="Set Evidence", pos = (0,0))
+        EvidenceBtn.Bind(wx.EVT_BUTTON, self.ChooseEvidenceNode)
+
         Sizer = wx.BoxSizer(wx.HORIZONTAL)
-        Sizer.Add(AddNodeBtn, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-        Sizer.Add(InfBtn, 0, wx.ALIGN_TOP|wx.ALL, 5)
-        Sizer.Add(ViewPropBtn, 0, wx.ALIGN_TOP|wx.ALL, 5)
+        Sizer.Add(ViewPropBtn, 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        #Sizer.Add(EvidenceBtn, 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        Sizer.Add(self, 0, wx.EXPAND)
+        #Sizer.SetSizeHints(self)
+        self.SetSizer(Sizer)
+        
+        self.SetBackgroundColour("gray")
 
-        self.SetSizerAndFit(Sizer)
-        self.InitBuffer() 
-        self.Buffer = None 
-        #self.SetBackgroundColour("white")
-        self.SetSize((700, 600))
 
     def InitBuffer(self):
         '''Setup canvas for circle drawing''' 
@@ -146,105 +138,19 @@ class DrawPanel(wx.Panel):
         self.Buffer = wx.EmptyBitmap(size.width, size.height) 
         self.dc = wx.MemoryDC() 
         self.dc.SelectObject(self.Buffer) 
-        
-    def OnPaint(self, evt):
-        '''Called when AddNode button is clicked - draw circle and line''' 
-        self.dc = wx.PaintDC(self)       
-        self.drawCircle() 
-        self.Refresh() 
-        self.InitBuffer 
-        self.drawLine() 
-
-    def drawCircle(self): 
-        self.dc.SetPen(wx.Pen("black", style=wx.SOLID)) 
-        #self.dc.SetBrush(wx.Brush("red", wx.TRANSPARENT)) 
-        for i in range(self.dim):
-            self.dc.DrawCircle(self.P[i], self.Qc[i], self.r)  
-
-    def drawLine(self): 
-        '''Connect circles'''
-        self.dc.SetPen(wx.Pen('#4c4c4c', 1, wx.SOLID)) 
-
-        for i in range(1,self.dim): #will need to store circle dimensions in array so lines can be drawn
-            self.dc.DrawLine(self.P[i-1], self.Qc[i-1], self.P[i], self.Qc[i])  
-
-    def MouseMove(self, e): 
-        '''Drag circles and lines'''
-        x, y = e.GetPosition() 
-
-        if self.d == 1: 
-            if self.t == 0: 
-                self.P[self.j] = x 
-                self.Qc[self.j] = y 
-            elif self.t == 1: 
-                self.P[self.j] = x 
-                self.Qb[self.j] = y 
-            else: pass 
-
-            self.drawCircle() 
-            self.drawLine() 
-            self.Refresh() 
-            self.InitBuffer 
-        
-        else: pass 
-        
-
-    def MouseUp(self, e): 
-        '''Drag circles and lines'''
-        self.d = 0 
-
-    def MouseDown(self, e): 
-        '''Drag circles and lines'''
-        self.d = 1 
-
-        x, y = e.GetPosition() 
-        
-        for i in range(self.dim): 
-            P = abs(self.P[i]-abs(x))//self.r 
-            Qb = abs(self.Qb[i]-abs(y))//self.r 
-            Qc = abs(self.Qc[i]-abs(y))//self.r 
-
-            if P == 0: 
-                if Qb == 0: 
-                    self.j = i 
-                    self.t = 1 
-                elif Qc == 0: 
-                    self.j = i 
-                    self.t = 0 
-                else: pass 
-            else: pass 
-
-    def AddNode(self, e):
-        '''Create a node from scratch - Only draws circle right now (won't draw multiple circles if you click button multiple times)'''
-        getInputs() #get info needed - eventually display within circles (maybe), or try and allow for right clicking in circle and open 'properties'
-        self.Bind(wx.EVT_PAINT, self.OnPaint) #draw circles 
-        self.Bind(wx.EVT_LEFT_DOWN, self.MouseDown) #allow for moving of cirlces/lines
-        self.Bind(wx.EVT_LEFT_UP, self.MouseUp) 
-        self.Bind(wx.EVT_MOTION, self.MouseMove)
-    
-    def OnInfBtn(self, event=None):
-        """Show results (eventually)."""
-        #this will call BN.doInference eventually and display results - need to think about display
-        dlg = wx.MessageDialog(self,
-                               message='Here is your answer',
-                               caption='Inference',
-                               style=wx.OK|wx.ICON_INFORMATION
-                               )
-        dlg.ShowModal()
-        dlg.Destroy()
 
     def ChooseNodeToView(self, e):
         #Choices
+        size=self.GetClientSize() 
         sampleList = BN.nodesSave
-        wx.StaticText(self, -1, "Please select node to view:", (228, 230))
-        self.ch = wx.Choice(self, -1, (250, 250), choices = sampleList)
+        text0 = wx.StaticText(self, -1, "Please select node to view:", style = wx.ALIGN_CENTER)
+        text0.CenterOnParent()
+        self.ch = wx.Choice(self, -1, (120, 120), choices = sampleList)
         self.Bind(wx.EVT_CHOICE, self.ViewNode, self.ch)
 
+
     def ViewNode(self, event):
-
-        self.Refresh
-        self.InitBuffer 
-
+        #self.Refresh
         # Button to erase properties and redraw everything else
         ExitPropBtn = wx.Button(self, label="Return to Home")
         ExitPropBtn.Bind(wx.EVT_BUTTON, self.Refresh)
@@ -253,27 +159,57 @@ class DrawPanel(wx.Panel):
         Sizer.Add(ExitPropBtn, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
         self.SetSizerAndFit(Sizer)
 
-        node = event.GetString()
+        node = event.GetString() #this gets the value selected from the dropdown
         #List Control
         id=wx.NewId()
         prop=wx.ListCtrl(self,id, size=(700,600), style=wx.LC_REPORT|wx.BORDER_SUNKEN)
-
+        Sizer.Add(prop, 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        self.SetSizerAndFit(Sizer)
         prop.Show(True)
 
         bnIndex = BN.nodesSave.index(node)
-        prop.InsertColumn(0,'Parent',width = 250)
-        prop.InsertColumn(1,'States', width = 250)
-        prop.InsertColumn(2,'CPT', width = 250)
+        prop.InsertColumn(0,'Parent',width = 60)
+        prop.InsertColumn(1,'States', width = 120)
+        prop.InsertColumn(2,'CPT', width = 500)
 
         # 0 will insert at the start of the list
         pos = prop.InsertStringItem(0,str(BN.parentsSave[bnIndex]))
         # add values in the other columns on the same row
         prop.SetStringItem(pos,1,str(BN.statesSave[bnIndex]))
         prop.SetStringItem(pos,2,str(BN.cptsSave[bnIndex]))
+        #text0.Destroy()
 
     def Refresh(self, event):
         self.Destroy()
         main()
+
+    def ChooseEvidenceNode(self, event):
+        #Choices
+        #self.Refresh
+        nodeList = BN.nodesSave
+        text = wx.StaticText(self, -1, "Please select node to set evidence on:", (238, 100))
+        self.ch = wx.Choice(self, -1, (250, 120), choices = nodeList)
+        self.Bind(wx.EVT_CHOICE, self.ChooseEvidenceState, self.ch)
+        #text.Destroy()
+
+    def ChooseEvidenceState(self, event):
+        #self.Refresh
+        evidenceNode = event.GetString()
+        evidenceHolder.append(evidenceNode)
+        stateList = BN.statesSave[BN.nodesSave.index(evidenceNode)]
+        text2 = wx.StaticText(self, -1, "Please select state for evidence:", (238, 200))
+        self.ch2 = wx.Choice(self, -1, (250, 220), choices = stateList)
+        self.Bind(wx.EVT_CHOICE, self.SetEvidence, self.ch2)
+        #text.Destroy()    
+
+    def SetEvidence(self, event):
+        state = event.GetString()
+        statePosition = BN.statesSave[BN.nodesSave.index(evidenceHolder[0])].index(state)
+        BN.evidenceList.append({evidenceHolder[0]:statePosition})
+        del evidenceHolder[:]
+
+    def __del__( self ):
+        pass
 
 def getInputs(parent = None):
     '''Get inputs needed to create node and add to inputs to global lists in BN'''
@@ -292,10 +228,14 @@ def getInputs(parent = None):
     #Input States - same as parents (ask for number first)
     #Input cpts (ideally grab parent states and create table to allow user to enter)
  
+def Refresh():
+    main()   
+
 def main():
     bn = wx.App()
     g = BNGUI(None)
-    DrawPanel(g)
+    panel_one(g)
+    # panel_two(g)
     bn.MainLoop()    
        
 if __name__ == '__main__':
