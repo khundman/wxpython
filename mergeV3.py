@@ -289,7 +289,7 @@ class panel_one (wx.Panel):
         state = event.GetString()
         statePosition = []
         statePosition.append(len(BN.statesSave[BN.nodesSave.index(evidenceHolder[0])]))
-        statePosition.append(BN.statesSave[BN.nodesSave.index(evidenceHolder[0])].index(state))
+        statePosition.append((BN.statesSave[BN.nodesSave.index(evidenceHolder[0])].index(state))+1) 
         BN.evidenceList.append({evidenceHolder[0]:statePosition})
         del evidenceHolder[:]
         self.ch.Hide()
@@ -492,16 +492,25 @@ class CPTPanel(wx.Panel):
 
         # Do Inference button
         InferenceOne = wx.Button(self, label="Do Inference - One Node", pos = (0,20))
-        InferenceOne.Bind(wx.EVT_BUTTON, self.DoOneInference)
+        InferenceOne.Bind(wx.EVT_BUTTON, self.ChooseInferenceNode)
 
         #Align buttons
         hbox.Add(InferenceAll, flag=wx.ALL, border=5)
         hbox.Add(InferenceOne, flag=wx.ALL, border=5)
         self.SetSizer(hbox)
 
+    def ChooseInferenceNode(self, event):
+        self.st1.SetLabel('')
+        self.nodeList2 = BN.nodesSave
+        self.ch3 = wx.Choice(self, -1, (5, 60), choices = self.nodeList2)
+        var = self.nodeList2[event.getSelection()]
+        print('var: ' + var)
+
     def DoOneInference(self, event):
         potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
-        BN.doOneInference(potentials)
+        potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
+        printList = BN.doOneInference(potentials, self.var)
+        self.st1.SetLabel(printList)
 
     def DoAllInference(self,event):
         self.st1.SetLabel('')
@@ -510,7 +519,6 @@ class CPTPanel(wx.Panel):
         dlg = wx.MessageDialog(self, message=printList, caption='Marginal Probabilities for all nodes',style=wx.OK|wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
-
         #Putting results on panel
         self.st1.SetLabel(printList)
         

@@ -57,18 +57,23 @@ def doAllInference(potentials):
     # print("{} -> {}".format(varsString, joint))
     return(printList)
 
-def doOneInference(potentials):
+def doOneInference(potentials, node):
     '''Return probabilities given evidence set by the user'''
     print("")
     dim = [i.dim for i in potentials]
     pots = [i.table for i in potentials]
     einsumFormat = ','.join(dim) 
     vars = sorted(list(set(''.join(dim)))) 
-    for v in vars:
-        vMarginal = np.einsum(einsumFormat+'->'+ v, *pots) 
-        vMarginal = vMarginal / np.sum(vMarginal)
-        print("{} -> {}".format(v,vMarginal))
+    printList = ''
+    print('node: ' + str(node))
 
+    for v in vars:
+        print('v: ' + v)
+        if v == node:
+            vMarginal = np.einsum(einsumFormat+'->'+ v, *pots) 
+            vMarginal = vMarginal / np.sum(vMarginal)
+            printList += ("{} -> {} \n".format(v,vMarginal))
+    return(printList)
 
 def createNode():
     '''Create a node by inputting its name, parents, states, and distribution'''
