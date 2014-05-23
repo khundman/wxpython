@@ -2,7 +2,9 @@
 #Commit code to github: git push origin master (after first one, can just typw git push)
 
 #To Do's
-#Multiple circles - redraw based on BN.parent.length
+#add functionality to get evidence on single node
+#input Cassie's panel changes
+#Test Save
 
 import wx
 # import wx.aui
@@ -226,7 +228,7 @@ class panel_one (wx.Panel):
 
 
     def ViewNode(self, event):
-        self.HideEverything(self)
+        self.HideEverything()
         #self.Refresh
         # Button to erase properties and redraw everything else
         self.ExitPropBtn = wx.Button(self, label="Return to Home")
@@ -477,38 +479,38 @@ class DrawPanel(wx.Panel):
 class CPTPanel(wx.Panel):   
     def __init__(self,parent):
         wx.Panel.__init__(self,parent)
-        
-        myGrid = gridlib.Grid(self)
-        self.grid = myGrid
-        myGrid.CreateGrid(5, 6)
-        
-        # change the row labels
-        for row in range(25):
-            rowNum = row + 1
-            myGrid.SetRowLabelValue(row, "Row %s" % rowNum)
- 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(myGrid, 1, wx.EXPAND)
-        self.SetSizer(sizer)
+        hbox = wx.BoxSizer(wx.VERTICAL)
+        size=self.GetClientSize()
+        self.st1 = wx.StaticText(self,-1, label='',pos= (size.width*13,size.height*.1))
+        self.Show(True) 
         
         # Do Inference button
-        ClearEvidence = wx.Button(self, label="Do Inference - All Nodes", pos = (560,0))
-        ClearEvidence.Bind(wx.EVT_BUTTON, self.DoAllInference)
+        InferenceAll = wx.Button(self, label="Do Inference - All Nodes", pos = (0,0))
+        InferenceAll.Bind(wx.EVT_BUTTON, self.DoAllInference)
 
         # Do Inference button
-        ClearEvidence = wx.Button(self, label="Do Inference - One Node", pos = (560,20))
-        ClearEvidence.Bind(wx.EVT_BUTTON, self.DoOneInference)
+        InferenceOne = wx.Button(self, label="Do Inference - One Node", pos = (0,20))
+        InferenceOne.Bind(wx.EVT_BUTTON, self.DoOneInference)
+
+        #Align buttons
+        hbox.Add(InferenceAll, flag=wx.ALL, border=5)
+        hbox.Add(InferenceOne, flag=wx.ALL, border=5)
+        self.SetSizer(hbox)
 
     def DoOneInference(self, event):
         potentials = BN.cpts + BN.evidenceList
         BN.doOneInference(potentials)
 
     def DoAllInference(self,event):
+        self.st1.SetLabel('')
         potentials = BN.cpts + BN.evidenceList
         printList = BN.doAllInference(potentials) 
         dlg = wx.MessageDialog(self, message=printList, caption='Marginal Probabilities for all nodes',style=wx.OK|wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
+
+        #Putting results on panel
+        self.st1.SetLabel(printList)
         
 def CPTsize(parent=None):
         #define the table size
