@@ -38,14 +38,32 @@ class TablePotential:
             self.dim = dim
         self.dim = dim
 
-def doInference(potentials):
+def doAllInference(potentials):
     '''Return probabilities given evidence set by the user'''
     print("")
     dim = [i.dim for i in potentials]
     pots = [i.table for i in potentials]
     einsumFormat = ','.join(dim) 
     vars = sorted(list(set(''.join(dim)))) 
+    printList = ''
 
+    for v in vars:
+        vMarginal = np.einsum(einsumFormat+'->'+ v, *pots) 
+        vMarginal = vMarginal / np.sum(vMarginal)
+        printList += ("{} -> {} \n".format(v,vMarginal))
+    # varsString = ''.join(vars)
+    # joint = np.einsum(einsumFormat+'->'+varsString,*pots)
+    # joint = joint/np.sum(joint)
+    # print("{} -> {}".format(varsString, joint))
+    return(printList)
+
+def doOneInference(potentials):
+    '''Return probabilities given evidence set by the user'''
+    print("")
+    dim = [i.dim for i in potentials]
+    pots = [i.table for i in potentials]
+    einsumFormat = ','.join(dim) 
+    vars = sorted(list(set(''.join(dim)))) 
     for v in vars:
         vMarginal = np.einsum(einsumFormat+'->'+ v, *pots) 
         vMarginal = vMarginal / np.sum(vMarginal)

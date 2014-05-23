@@ -11,6 +11,11 @@ import functools
 import datetime
 
 evidenceHolder = [] 
+evidenceList=[]
+nodeData=[]
+row=0
+column=0
+inputs=[]
 
 #Frame - can't figure out how to change initial size
 class BNGUI(wx.Frame):
@@ -130,15 +135,7 @@ class panel_one (wx.Panel):
         #Sizer.SetSizeHints(self)
         self.SetSizer(Sizer)
         
-        self.SetBackgroundColour("gray")
-
-
-    def InitBuffer(self):
-        '''Setup canvas for circle drawing''' 
-        size=self.GetClientSize() 
-        self.Buffer = wx.EmptyBitmap(size.width, size.height) 
-        self.dc = wx.MemoryDC() 
-        self.dc.SelectObject(self.Buffer) 
+        self.SetBackgroundColour("gray") 
 
     def ChooseNodeToView(self, e):
         #Choices
@@ -183,9 +180,6 @@ class panel_one (wx.Panel):
         prop.SetStringItem(pos,1,str(BN.statesSave[bnIndex]))
         prop.SetStringItem(pos,2,str(BN.cptsSave[bnIndex]))
         #text0.Destroy()
-
-    def Refresh(self):
-        self.Destroy()
 
     def ChooseEvidenceNode(self, event):
         #Choices
