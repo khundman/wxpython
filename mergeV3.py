@@ -491,6 +491,24 @@ class CPTPanel(wx.Panel):
         sizer.Add(myGrid, 1, wx.EXPAND)
         self.SetSizer(sizer)
         
+        # Do Inference button
+        ClearEvidence = wx.Button(self, label="Do Inference - All Nodes", pos = (560,0))
+        ClearEvidence.Bind(wx.EVT_BUTTON, self.DoAllInference)
+
+        # Do Inference button
+        ClearEvidence = wx.Button(self, label="Do Inference - One Node", pos = (560,20))
+        ClearEvidence.Bind(wx.EVT_BUTTON, self.DoOneInference)
+
+    def DoOneInference(self, event):
+        potentials = BN.cpts + BN.evidenceList
+        BN.doOneInference(potentials)
+
+    def DoAllInference(self,event):
+        potentials = BN.cpts + BN.evidenceList
+        printList = BN.doAllInference(potentials) 
+        dlg = wx.MessageDialog(self, message=printList, caption='Marginal Probabilities for all nodes',style=wx.OK|wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
         
 def CPTsize(parent=None):
         #define the table size
