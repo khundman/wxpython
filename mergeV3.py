@@ -229,7 +229,6 @@ class panel_one (wx.Panel):
 
     def ViewNode(self, event):
         self.HideEverything()
-        #self.Refresh
         # Button to erase properties and redraw everything else
         self.ExitPropBtn = wx.Button(self, label="Return to Home")
         self.ExitPropBtn.Bind(wx.EVT_BUTTON, self.ReturnToHome)
@@ -241,7 +240,7 @@ class panel_one (wx.Panel):
         node = event.GetString() #this gets the value selected from the dropdown
         #List Control
         id=wx.NewId()
-        self.prop=wx.ListCtrl(self,id, size=(200,100), style=wx.LC_REPORT|wx.BORDER_SUNKEN)
+        self.prop=wx.ListCtrl(self,id, size=(500,100),pos = (0,200), style=wx.LC_REPORT|wx.BORDER_SUNKEN)
         Sizer.Add(self.prop, 0, wx.ALIGN_LEFT|wx.ALL, 5)
         self.SetSizerAndFit(Sizer)
         self.prop.Show(True)
@@ -257,6 +256,7 @@ class panel_one (wx.Panel):
         self.prop.SetStringItem(pos,1,str(BN.statesSave[bnIndex]))
         self.prop.SetStringItem(pos,2,str(BN.cptsSave[bnIndex]))
         #text0.Destroy()
+        self.Refresh
 
     def ChooseEvidenceNode(self, event):
         #Choices
@@ -309,18 +309,22 @@ class panel_one (wx.Panel):
                 lg.Destroy()
             else:
                 print()
-                for i in range(0,len(BN.evidenceList)):
+                found = False
+                i = 0
+                while found == False and i < len(BN.evidenceList):
                     if delete in BN.evidenceList[i].keys():
                         del BN.evidenceList[i]
                         dlg2 = wx.MessageDialog(self, message='Evidence removed.',
                         caption='Success', style=wx.OK|wx.ICON_INFORMATION)
                         dlg2.ShowModal()
-                        dlg2.Destroy()    
+                        dlg2.Destroy()
+                        found = True  
                     else:
-                        dlg = wx.MessageDialog(self, message='Evidence was not set for this node.',
-                                   caption='Error', style=wx.OK|wx.ICON_INFORMATION)
-                        dlg.ShowModal()
-                        dlg.Destroy()
+                        i = i+1
+                if found == False:
+                    dlg = wx.MessageDialog(self, message='Evidence was not set for this node.', caption='Error', style=wx.OK|wx.ICON_INFORMATION)
+                    dlg.ShowModal()
+                    dlg.Destroy()       
 
     def ReturnToHome(self, event):
         self.prop.Hide()
@@ -483,42 +487,22 @@ class CPTPanel(wx.Panel):
         wx.Panel.__init__(self,parent)
         hbox = wx.BoxSizer(wx.VERTICAL)
         size=self.GetClientSize()
-        self.st1 = wx.StaticText(self,-1, label='',pos= (size.width*13,size.height*.1))
+        self.st1 = wx.StaticText(self,-1, label='',pos= (size.width*12,size.height*.1))
+        self.st2 = wx.StaticText(self,-1, label='Results:',pos= (size.width*6,size.height*.3))
         self.Show(True) 
         
         # Do Inference button
-        InferenceAll = wx.Button(self, label="Do Inference - All Nodes", pos = (0,0))
+        InferenceAll = wx.Button(self, label="Do Inference", pos = (0,0))
         InferenceAll.Bind(wx.EVT_BUTTON, self.DoAllInference)
-
-        # Do Inference button
-        InferenceOne = wx.Button(self, label="Do Inference - One Node", pos = (0,20))
-        InferenceOne.Bind(wx.EVT_BUTTON, self.ChooseInferenceNode)
 
         #Align buttons
         hbox.Add(InferenceAll, flag=wx.ALL, border=5)
-        hbox.Add(InferenceOne, flag=wx.ALL, border=5)
         self.SetSizer(hbox)
-
-    def ChooseInferenceNode(self, event):
-        self.st1.SetLabel('')
-        self.nodeList2 = BN.nodesSave
-        self.ch3 = wx.Choice(self, -1, (5, 60), choices = self.nodeList2)
-        var = self.nodeList2[event.getSelection()]
-        print('var: ' + var)
-
-    def DoOneInference(self, event):
-        potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
-        potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
-        printList = BN.doOneInference(potentials, self.var)
-        self.st1.SetLabel(printList)
 
     def DoAllInference(self,event):
         self.st1.SetLabel('')
         potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
         printList = BN.doAllInference(potentials) 
-        dlg = wx.MessageDialog(self, message=printList, caption='Marginal Probabilities for all nodes',style=wx.OK|wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
         #Putting results on panel
         self.st1.SetLabel(printList)
         
