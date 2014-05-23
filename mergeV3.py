@@ -24,6 +24,12 @@ class BNGUI(wx.Frame):
         super(BNGUI,self).__init__(*args,**kwargs)
         self.InitUI()
         self.SetBackgroundColour("white")
+        del BN.nodesSave[:]
+        del BN.parentsSave[:]
+        del BN.statesSave[:]
+        del BN.cptsSave[:]
+        del BN.evidenceList[:]
+        del BN.cpts[:]
 
     def InitUI(self):
         menubar = wx.MenuBar()
@@ -234,8 +240,8 @@ class panel_one (wx.Panel):
         self.ExitPropBtn.Bind(wx.EVT_BUTTON, self.ReturnToHome)
 
         Sizer = wx.BoxSizer(wx.VERTICAL)
-        Sizer.Add(self.ExitPropBtn, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
-        self.SetSizerAndFit(Sizer)
+        Sizer.Add(self.ExitPropBtn, 0, wx.ALIGN_BOTTOM|wx.ALL, 5)
+        self.SetSizer(Sizer)
 
         node = event.GetString() #this gets the value selected from the dropdown
         #List Control
@@ -256,7 +262,6 @@ class panel_one (wx.Panel):
         self.prop.SetStringItem(pos,1,str(BN.statesSave[bnIndex]))
         self.prop.SetStringItem(pos,2,str(BN.cptsSave[bnIndex]))
         #text0.Destroy()
-        self.Refresh
 
     def ChooseEvidenceNode(self, event):
         #Choices
