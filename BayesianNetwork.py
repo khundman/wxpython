@@ -69,10 +69,6 @@ def doOneInference(potentials):
         vMarginal = vMarginal / np.sum(vMarginal)
         print("{} -> {}".format(v,vMarginal))
 
-    varsString = ''.join(vars)
-    joint = np.einsum(einsumFormat+'->'+varsString,*pots)
-    joint = joint/np.sum(joint)
-    print("{} -> {}".format(varsString, joint))
 
 def createNode():
     '''Create a node by inputting its name, parents, states, and distribution'''

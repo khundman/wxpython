@@ -287,7 +287,9 @@ class panel_one (wx.Panel):
     def SetEvidence(self, event):
         self.HideEverything()
         state = event.GetString()
-        statePosition = BN.statesSave[BN.nodesSave.index(evidenceHolder[0])].index(state)
+        statePosition = []
+        statePosition.append(len(BN.statesSave[BN.nodesSave.index(evidenceHolder[0])]))
+        statePosition.append(BN.statesSave[BN.nodesSave.index(evidenceHolder[0])].index(state))
         BN.evidenceList.append({evidenceHolder[0]:statePosition})
         del evidenceHolder[:]
         self.ch.Hide()
@@ -498,12 +500,12 @@ class CPTPanel(wx.Panel):
         self.SetSizer(hbox)
 
     def DoOneInference(self, event):
-        potentials = BN.cpts + BN.evidenceList
+        potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
         BN.doOneInference(potentials)
 
     def DoAllInference(self,event):
         self.st1.SetLabel('')
-        potentials = BN.cpts + BN.evidenceList
+        potentials = BN.cpts + BN.setEvidenceList(BN.evidenceList)
         printList = BN.doAllInference(potentials) 
         dlg = wx.MessageDialog(self, message=printList, caption='Marginal Probabilities for all nodes',style=wx.OK|wx.ICON_INFORMATION)
         dlg.ShowModal()
