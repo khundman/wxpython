@@ -190,7 +190,3 @@ def save(filepath):
 # load("/users/kylehundman/desktop/output.json") #load back in saved node (after creation of full network)
 # evidences = getUserInput()  
 # doInference(cpts + setEvidenceList(evidences))
-
-
-
-
